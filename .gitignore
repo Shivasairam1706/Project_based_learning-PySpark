@@ -1,0 +1,5 @@
+*.log
+*.pyc
+tempCodeRunnerFile.py
+__pycache__
+Source:
