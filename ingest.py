@@ -5,7 +5,6 @@ import logging.config
 
 logging.config.fileConfig('logging.config')
 logger = logging.getLogger('ingest')
-logger.setLevel(logging.DEBUG)
 
 def  ingest_data(spark,file_path,file_format,header,inferschema):
     try :
@@ -15,7 +14,7 @@ def  ingest_data(spark,file_path,file_format,header,inferschema):
             df = spark.read.format(file_format).load(file_path)
         
         elif file_format == 'csv' :
-            df = spark.read.format(file_format).option(header = header).option(inferschema = inferschema).load(file_path)
+            df = spark.read.format(file_format).options(header = header, inferschema = inferschema).load(file_path)
         # Displays the count of the newly loaded dataframe
         logger.warning(f'Total no.of records loaded into dataframe from file : {df.count()}')
         

@@ -2,11 +2,13 @@ import sys
 import os
 import env_var
 from spark_session import get_spark_object
-from Validate import get_current_date
+from Validate import get_current_date, print_schema
 import logging
 import logging.config
 from ingest import ingest_data
 from Data_processing import data_processing
+
+
 
 logging.config.fileConfig('logging.config')
 logger = logging.getLogger('root')
@@ -34,6 +36,10 @@ def main():
         
     return spark
     
+# Function to clear the log file before each excution.
+def clear_log_file(log_file):
+    with open(log_file, 'w'):
+        pass
 
     
 # function to get the csv file_name list
@@ -59,14 +65,18 @@ def get_sourc_files(path,file_type):
             
 if __name__ == '__main__':
     
+    # Clear the log file before starting the new runtime
+    clear_log_file('application.log')
+
     out_spark = main() # creates spark session/object
-    logging.info('Application done..')
+    
     # Reads the files from source path and assigns base parameters using the file_type
     parq_file_format, parq_header, parq_inferschema, parq_path_file = get_sourc_files(env_var.src_path,'parquet')
     # Creates a dataframe using the ingest_data method from ingest file.
     df_city = ingest_data(spark=out_spark,file_path=parq_path_file,file_format=parq_file_format,header=parq_header,inferschema=parq_inferschema)
     # Displays the first five records of the dataframe.
     #df_city.show()
+    
     # creating dataframe for csv file.
     csv_file_format, csv_header, csv_inferschema, csv_path_file = get_sourc_files(env_var.src_path,'csv')
     # Creates a dataframe using the ingest_data method from ingest file.
@@ -76,9 +86,17 @@ if __name__ == '__main__':
 
     # Processing the data of parquet file
     df_par = data_processing(df_city,'parquet')
-    df_par.show()
+    #df_par.show()
     # Processing the data of csv file
     df_csv = data_processing(df_medicare,'csv')
-    df_csv.show()
+    #df_csv.show()
+    
+    logger.info("Validating the Schema of dataframes...")
+    df_par.show() # Parquet file data
+    df_csv.show() # CSV file data
+    
+    ###### ending the spark process ##########
+    logger.info("Application Done...")
+    out_spark.stop()
     
     
