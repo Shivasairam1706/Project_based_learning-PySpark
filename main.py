@@ -6,6 +6,7 @@ from Validate import get_current_date
 import logging
 import logging.config
 from ingest import ingest_data
+from Data_processing import data_processing
 
 logging.config.fileConfig('logging.config')
 logger = logging.getLogger('root')
@@ -65,14 +66,19 @@ if __name__ == '__main__':
     # Creates a dataframe using the ingest_data method from ingest file.
     df_city = ingest_data(spark=out_spark,file_path=parq_path_file,file_format=parq_file_format,header=parq_header,inferschema=parq_inferschema)
     # Displays the first five records of the dataframe.
-    df_city.show()
-    print(df_city.count())
-    ###################### CSV ######################
+    #df_city.show()
+    # creating dataframe for csv file.
     csv_file_format, csv_header, csv_inferschema, csv_path_file = get_sourc_files(env_var.src_path,'csv')
     # Creates a dataframe using the ingest_data method from ingest file.
     df_medicare = ingest_data(spark=out_spark,file_path=csv_path_file,file_format=csv_file_format,header=csv_header,inferschema=csv_inferschema)
     # Displays the first five records of the dataframe.
-    df_medicare.show()
-    print(df_medicare.count())
-            
+    #df_medicare.show()
+
+    # Processing the data of parquet file
+    df_par = data_processing(df_city,'parquet')
+    df_par.show()
+    # Processing the data of csv file
+    df_csv = data_processing(df_medicare,'csv')
+    df_csv.show()
+    
     

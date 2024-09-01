@@ -13,6 +13,7 @@ appName = 'firstproject'
 
 # To get the currect working directory...
 act_path = os.getcwd()
+#act_path = 'D:\\Downloads'
 
 # Creating path to the source files...
-src_path = act_path + '\\Source'
+src_path = act_path + '\\Source';

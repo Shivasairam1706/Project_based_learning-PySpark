@@ -15,18 +15,19 @@ def  ingest_data(spark,file_path,file_format,header,inferschema):
             df = spark.read.format(file_format).load(file_path)
         
         elif file_format == 'csv' :
-            df = spark.read.format(file_format).option(header = header,inferschema = inferschema).load(file_path)
+            df = spark.read.format(file_format).option(header = header).option(inferschema = inferschema).load(file_path)
         # Displays the count of the newly loaded dataframe
-        logger.warning('Total no.of records loaded into dataframe from file : ',df.count())
+        logger.warning(f'Total no.of records loaded into dataframe from file : {df.count()}')
+        
+        return df
     
-    except Exception as exc :
-        logger.warning('An error occured at ingest process... ===> ', str(exc))
+    except Exception as err :
+        logger.error(f"Unable to ingest data from {file_path} due to: {err}")
+        
         raise
     
     else :
-        logger.warning('Ingest process completed and DataFrame (df) created successfully...\U0001f600')
-    
-    return df
+        logger.warning('Ingest process completed and DataFrame (df) created successfully...')
 
 
 
